@@ -1,17 +1,24 @@
 from fastapi import APIRouter
-from app.services import main  # services.main 모듈 임포트
+from app.services.login.login import perform_login
+from app.services.internal_group.create_internal_group import create_internal_group
 
 router = APIRouter()
 
 @router.post("/api/create/internal_group")
-async def create_internal_group():
+async def create_internal_group_endpoint():
     try:
-        # services.main의 함수 호출 예시
-        result = await main.main()  # main.py의 main 함수 호출
+        # 로그인 하기 
+        page = await perform_login("real", "jp2")  
 
-        # 성공한 경우 결과를 반환
-        return {"message": "요청 성공?", "data": result}
+        # 페이지 객체가 None인지 확인
+        if page is None:
+            return {"status": "error", "message": "페이지 초기화 실패"}
+        
+        # 내부 그룹 생성 실행
+        result = await create_internal_group(page)
+        
+        return result
 
     except Exception as e:
-        # 실패한 경우 오류 메시지 반환
-        return {"message": f"Error occurred: {str(e)}", "data": None}
+        return {"status": "error", "message": f"내부 그룹 생성 중 오류 발생: {str(e)}"}
+        
