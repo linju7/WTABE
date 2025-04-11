@@ -11,6 +11,16 @@ async def login_web(page, domain):
     await page.fill("#user_id", user_id)
     await page.click("#loginStart")
     
+    # 아이디 입력 후 잘못된 경우 에러 DOM이 있는지 확인 (1초 대기 후)
+    await page.wait_for_timeout(1000)
+    try:
+        error_element = await page.query_selector(".input_cover.writing.invalid")
+        if error_element:
+            return None
+    except TimeoutError:
+        # 셀렉터 탐색 시 타임아웃 날 경우 그냥 넘어감
+        pass
+    
     # 비밀번호 입력
     await page.fill("#user_pwd", password)
     await page.click("#loginBtn")

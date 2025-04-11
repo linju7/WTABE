@@ -23,9 +23,16 @@ async def login_endpoint(request: Request):
         instance = body.get("instance")
         server = body.get("server")
 
-        # URL 이동 및 로그인
+        # URL 이동=
         page = await move_url(page, server, instance)
+        
+        # 로그인 수행
         page = await perform_login(page, domain)
+        
+        if page is None:
+            print("로그인 실패: 도메인이 잘못되었습니다.")
+            return {"status": "error", "message": "로그인 실패: 도메인이 잘못되었습니다."}
+        
         await page.pause()
 
         return {"status": "success"}
