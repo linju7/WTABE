@@ -20,6 +20,3 @@ app.include_router(router)
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
-
-
-#아무거나...
