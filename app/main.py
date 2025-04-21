@@ -5,6 +5,9 @@ from app.api.endpoints import router
 # FastAPI 애플리케이션 객체 정의
 app = FastAPI()
 
+# 애플리케이션 상태 초기화
+app.state.global_page = None
+
 # CORS 설정 추가
 app.add_middleware(
     CORSMiddleware,
