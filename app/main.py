@@ -19,7 +19,3 @@ app.add_middleware(
 
 # 라우터 등록
 app.include_router(router)
-
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}

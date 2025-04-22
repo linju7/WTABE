@@ -1,7 +1,6 @@
 from playwright.async_api import async_playwright  
 from app.services.security import accounts
 from app.services.url.move_url import move_url
-import asyncio
 from fastapi import Request, APIRouter
 
 router = APIRouter()
@@ -14,8 +13,8 @@ async def login_web(page, domain):
     await page.fill("#user_id", user_id)
     await page.click("#loginStart")
     
-    # 탐색 완료 대기
-    await page.wait_for_load_state("networkidle")  # 네트워크 요청이 안정된 상태가 될 때까지 대기
+    # 네트워크 요청이 안정된 상태가 될 때까지 대기
+    await page.wait_for_load_state("networkidle")  
     
     # 비밀번호 입력
     await page.fill("#user_pwd", accounts["password"])
