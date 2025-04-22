@@ -2,8 +2,26 @@ from fastapi import APIRouter, Request
 from app.services.login.login import process_login
 from app.services.login.logout import process_logout
 from app.services.user.createUser import process_create_user
+from app.services.login.verification import process_verification
 
 router = APIRouter()
+
+@router.post("/api/security")
+async def security(request: Request):
+    """
+    보안 API 엔드포인트
+    """
+    try:
+        # 요청 파싱
+        body = await request.json()
+        password = body.get("password")
+        response = await process_verification(password)
+        
+        return response
+
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
 
 @router.post("/api/login")
 async def login(request: Request):
