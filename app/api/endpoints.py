@@ -3,6 +3,7 @@ from app.services.login.login import process_login
 from app.services.login.logout import process_logout
 from app.services.user.createUser import process_create_user
 from app.services.login.verification import process_verification
+from app.services.orgunits.createOrgunits import process_create_orgunits
 
 router = APIRouter()
 
@@ -67,6 +68,23 @@ async def create_user(request: Request):
         
         # 사용자 생성 처리 호출
         response = await process_create_user(request.app.state.global_page, instance, server)
+        return response
+
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    
+@router.post("/api/orgunits/create")
+async def create_orgunit(request: Request):
+    """
+    조직 생성 API 엔드포인트
+    """
+    try:
+        body = await request.json()
+        instance = body.get("instance")
+        server = body.get("server")
+        
+        # 조직 단위 생성 처리 호출
+        response = await process_create_orgunits(request.app.state.global_page, instance, server)
         return response
 
     except Exception as e:

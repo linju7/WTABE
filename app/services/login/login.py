@@ -60,6 +60,7 @@ async def process_login(domain: str, instance: str, server: str, state) -> dict:
     """
     로그인 프로세스를 처리하는 함수
     """
+    print(domain, instance, server)
     success, page = await handle_browser_session(domain, instance, server)
 
     if success:
