@@ -7,6 +7,7 @@ app = FastAPI()
 
 # 애플리케이션 상태 초기화
 app.state.global_page = None
+app.state.global_user_id = None
 
 # CORS 설정 추가
 app.add_middleware(

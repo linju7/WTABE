@@ -2,6 +2,7 @@ from fastapi import APIRouter, Request
 from app.services.login.login import process_login
 from app.services.login.logout import process_logout
 from app.services.user.createUser import process_create_user
+from app.services.user.modifyUser import process_modify_user
 from app.services.login.verification import process_verification
 from app.services.orgunits.createOrgunits import process_create_orgunits
 
@@ -67,11 +68,31 @@ async def create_user(request: Request):
         server = body.get("server")
         
         # 사용자 생성 처리 호출
-        response = await process_create_user(request.app.state.global_page, instance, server)
+        response = await process_create_user(request.app.state.global_page, instance, server, request.app.state)
         return response
 
     except Exception as e:
         return {"status": "error", "message": str(e)}
+    
+@router.post("/api/user/modify")
+async def modify_user(request: Request):
+    """
+    사용자 수정 API 엔드포인트
+    """
+    try :
+        body = await request.json()
+        instance = body.get("instance")
+        server = body.get("server")
+
+        # 사용자 수정 처리 호출
+        response = await process_modify_user(request.app.state.global_page, instance, server, request.app.state)
+        return response
+    
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+    
+    
     
 @router.post("/api/orgunits/create")
 async def create_orgunit(request: Request):
