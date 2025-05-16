@@ -24,45 +24,27 @@ async def fill_user_info(page, app_state):
     # 모든 항목 표시 버튼 클릭
     await page.wait_for_selector('button.opt_toggle.fold', state='visible', timeout=5000)
     button = page.locator('button.opt_toggle.fold')
-    is_visible = await button.is_visible()
-    if is_visible:
+    if await button.is_visible():
         await button.click()
 
-    # 성
-    await page.wait_for_selector('input.lw_input[placeholder="성"][maxlength="80"]', timeout=5000)
-    await page.locator('input.lw_input[placeholder="성"][maxlength="80"]').fill("자동화_")
-
-    # 이름
-    await page.locator('input.lw_input[placeholder="이름"][maxlength="80"]').fill(timestamp)
-
-    # 다국어
-    if await page.locator('input.lw_input[placeholder="姓(日本語)"]').count() > 0:
-        await page.locator('input.lw_input[placeholder="姓(日本語)"]').fill("일본어성")
-    if await page.locator('input.lw_input[placeholder="名(日本語)"]').count() > 0:
-        await page.locator('input.lw_input[placeholder="名(日本語)"]').fill("일본어이름")
-    if await page.locator('input.lw_input[placeholder="Last"]').count() > 0:
-        await page.locator('input.lw_input[placeholder="Last"]').fill("영어성")
-    if await page.locator('input.lw_input[placeholder="First"]').count() > 0:
-        await page.locator('input.lw_input[placeholder="First"]').fill("영어이름")
-    if await page.locator('input.lw_input[placeholder="성"][maxlength="100"]').count() > 0:
-        await page.locator('input.lw_input[placeholder="성"][maxlength="100"]').fill("한국어성")
-    if await page.locator('input.lw_input[placeholder="이름"][maxlength="100"]').count() > 0:
-        await page.locator('input.lw_input[placeholder="이름"][maxlength="100"]').fill("한국어이름")
-    if await page.locator('input.lw_input[placeholder="姓(简体中文)"]').count() > 0:
-        await page.locator('input.lw_input[placeholder="姓(简体中文)"]').fill("번체성")
-    if await page.locator('input.lw_input[placeholder="名(简体中文)"]').count() > 0:
-        await page.locator('input.lw_input[placeholder="名(简体中文)"]').fill("번체이름")
-    if await page.locator('input.lw_input[placeholder="姓(繁體中文)"]').count() > 0:
-        await page.locator('input.lw_input[placeholder="姓(繁體中文)"]').fill("간체성")
-    if await page.locator('input.lw_input[placeholder="名(繁體中文)"]').count() > 0:
-        await page.locator('input.lw_input[placeholder="名(繁體中文)"]').fill("간체이름")
-
-    # 닉네임
-    await page.locator('input.lw_input[placeholder="닉네임"]').fill("자동화_닉네임")
-
-    # ID
-    await page.locator('input.lw_input[placeholder="ID"]').fill(user_id)
-
+    # 기본 필드 입력
+    basic_fields = [
+        ("성", 'input.lw_input[placeholder="성"][maxlength="80"]', "자동화_"),
+        ("이름", 'input.lw_input[placeholder="이름"][maxlength="80"]', timestamp),
+        ("닉네임", 'input.lw_input[placeholder="닉네임"]', "자동화_닉네임"),
+        ("ID", 'input.lw_input[placeholder="ID"]', user_id),
+        ("사내 번호", 'input.lw_input[placeholder="사내 번호"]', f"P-{timestamp}"),
+        ("전화번호", 'input.lw_input[placeholder="전화번호"]', f"T-{timestamp}"),
+        ("근무처", 'input.lw_input[placeholder="근무처"]', "자동화_근무처"),
+        ("담당 업무", 'input.lw_input[placeholder="담당 업무"]', "자동화_담당업무"),
+        ("사원 번호", 'input.lw_input[placeholder="사원 번호"]', f"자동화_{timestamp}"),
+        ("생일", 'input.lw_input[name="birthday"]', "1999. 12. 31"),
+        ("입사일", 'input.lw_input[name="hiredDate"]', "2000. 01. 01")
+    ]
+    for label, selector, value in basic_fields:
+        if await page.locator(selector).count() > 0:
+            await page.locator(selector).fill(value)
+            
     # 사용자 유형 1번째 선택
     user_type_select = page.locator("//div[i[text()='사용자 유형']]//select[@id='member_type']")
     first_value = await user_type_select.locator('option').nth(1).get_attribute('value')
@@ -73,38 +55,36 @@ async def fill_user_info(page, app_state):
     first_value = await user_type_select.locator('option').nth(1).get_attribute('value')
     await user_type_select.select_option(value=first_value)
 
-    # 사내번호
-    await page.locator('input.lw_input[placeholder="사내 번호"]').fill(f"P-{timestamp}")
+    # 다국어 필드 입력
+    multilingual_fields = [
+        ("姓(日本語)", "일본어성"),
+        ("名(日本語)", "일본어이름"),
+        ("Last", "영어성"),
+        ("First", "영어이름"),
+        ("성", "한국어성", 'maxlength="100"'),
+        ("이름", "한국어이름", 'maxlength="100"'),
+        ("姓(简体中文)", "번체성"),
+        ("名(简体中文)", "번체이름"),
+        ("姓(繁體中文)", "간체성"),
+        ("名(繁體中文)", "간체이름")
+    ]
+    for placeholder, value, *extra in multilingual_fields:
+        selector = f'input.lw_input[placeholder="{placeholder}"]'
+        if extra:
+            selector += f'[{extra[0]}]'
+        if await page.locator(selector).count() > 0:
+            await page.locator(selector).fill(value)
 
-    # 전화번호
-    await page.locator('input.lw_input[placeholder="전화번호"]').fill(f"T-{timestamp}")
 
-    # 보조 이메일
+
+    # 보조 이메일 추가
     await page.locator('button.generate', has_text="보조 이메일 추가").click()
     await page.wait_for_selector('input.lw_input.email_id[placeholder="보조 이메일"]', timeout=5000)
     await page.locator('input.lw_input.email_id[placeholder="보조 이메일"]').fill(f"sub_email_{timestamp}")
 
-    # 개인 이메일
+    # 개인 이메일 입력
     await page.locator('input.lw_input[placeholder="개인 이메일"]').fill(f"private_email_{timestamp}")
-    await page.locator('input.lw_input[placeholder="직접 입력"]').fill(f"private.domain")
-
-    # 사용 언어 한국어 선택
-    await page.locator('select#language_type').select_option(label="Korean")
-
-    # 근무처
-    await page.locator('input.lw_input[placeholder="근무처"]').fill(f"자동화_근무처")
-
-    # 담당 업무
-    await page.locator('input.lw_input[placeholder="담당 업무"]').fill(f"자동화_담당업무")
-
-    # 생일
-    await page.locator('input.lw_input[name="birthday"]').fill("1999. 12. 31")
-
-    # 입사일
-    await page.locator('input.lw_input[name="hiredDate"]').fill("2000. 01. 01")
-
-    # 사원 번호
-    await page.locator('input.lw_input[placeholder="사원 번호"]').fill(f"자동화_{timestamp}")
+    await page.locator('input.lw_input[placeholder="직접 입력"]').fill("private.domain")
 
     return page
 
