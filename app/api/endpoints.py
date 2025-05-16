@@ -38,6 +38,11 @@ async def login(request: Request):
         instance = body.get("instance")
         server = body.get("server")
 
+        # 전역 변수 업데이트
+        request.app.state.global_domain = domain
+        request.app.state.global_instance = instance
+        request.app.state.global_server = server
+
         # 로그인 처리 호출
         response = await process_login(domain, instance, server, request.app.state)
         return response

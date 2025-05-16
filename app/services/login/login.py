@@ -7,7 +7,7 @@ router = APIRouter()
 
 # 로그인을 수행하는 함수
 async def login_web(page, domain):
-    user_id = "automation@" + domain 
+    user_id = "automation" + domain 
 
     # id 입력 
     await page.fill("#user_id", user_id)
