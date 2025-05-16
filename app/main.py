@@ -7,7 +7,10 @@ app = FastAPI()
 
 # 애플리케이션 상태 초기화
 app.state.global_page = None
-app.state.global_user_id = "자동화_05161106"
+app.state.global_user_id = "junil_05161420"
+app.state.global_domain = "@kr1-prm0825.by-works.com"
+app.state.global_instance = "kr1"
+app.state.global_server = "real"
 
 # CORS 설정 추가
 app.add_middleware(
