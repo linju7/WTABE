@@ -4,6 +4,7 @@ from app.services.login.logout import process_logout
 from app.services.user.createUser import process_create_user
 from app.services.user.modifyUser import process_modify_user
 from app.services.user.retreiveUser import process_retreive_user
+from app.services.user.deleteUser import process_delete_user
 from app.services.login.verification import process_verification
 from app.services.orgunits.createOrgunits import process_create_orgunits
 
@@ -109,6 +110,23 @@ async def modify_user(request: Request):
 
         # 사용자 수정 처리 호출
         response = await process_retreive_user(request.app.state.global_page, instance, server, request.app.state)
+        return response
+    
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    
+@router.post("/api/user/delete")
+async def delete_user(request: Request):
+    """
+    사용자 조회 API 엔드포인트
+    """
+    try :
+        body = await request.json()
+        instance = body.get("instance")
+        server = body.get("server")
+
+        # 사용자 수정 처리 호출
+        response = await process_delete_user(request.app.state.global_page, instance, server, request.app.state)
         return response
     
     except Exception as e:

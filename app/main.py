@@ -7,7 +7,7 @@ app = FastAPI()
 
 # 애플리케이션 상태 초기화
 app.state.global_page = None
-app.state.global_user_id = "junil_05161420"
+app.state.global_user_id = "junil_05161607"
 app.state.global_domain = "@kr1-prm0825.by-works.com"
 app.state.global_instance = "kr1"
 app.state.global_server = "real"
