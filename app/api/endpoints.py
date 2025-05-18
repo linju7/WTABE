@@ -127,6 +127,7 @@ async def delete_user(request: Request):
 
         # 사용자 수정 처리 호출
         response = await process_delete_user(request.app.state.global_page, instance, server, request.app.state)
+        request.app.state.global_user_id = ""
         return response
     
     except Exception as e:

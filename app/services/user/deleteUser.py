@@ -31,7 +31,7 @@ async def delete_user(page: Page):
     사용자 삭제 - 체크박스 선택 및 삭제 확정
     """
 
-    # 1. 사용자 체크박스 선택
+    # # 1. 사용자 체크박스 선택
     await page.wait_for_selector('label[for="default-id-3-all"]', state='visible', timeout=10000)
     await page.click('label[for="default-id-3-all"]')
 
@@ -51,7 +51,16 @@ async def delete_user(page: Page):
     # 5. 삭제 버튼이 활성화될 때까지 대기 후 클릭
     await page.wait_for_selector('div.ly_common.ly_page button.lw_btn_alert:not([disabled])', timeout=10000)
     await page.click('div.ly_common.ly_page button.lw_btn_alert')
+    
+    # 6. 영구 삭제 하기
+    await page.wait_for_selector('div.lw_td.status a.btn_action[href="#"]:nth-of-type(2)', state='visible', timeout=10000)
+    await page.click('div.lw_td.status a.btn_action[href="#"]:nth-of-type(2)')
 
+    await page.wait_for_selector('div.ly_common.freeplan button.lw_btn_point', state='visible', timeout=10000)
+    await page.click('div.ly_common.freeplan button.lw_btn_point')
+
+
+    return page
     return page
 
 
