@@ -27,6 +27,13 @@ async def security(request: Request):
         return {"status": "error", "message": str(e)}
 
 
+
+
+"""
+    -----------------------------------------------
+    테스트 환경 선택 API 
+"""
+
 @router.post("/api/login")
 async def login(request: Request):
     """
@@ -63,6 +70,62 @@ async def logout(request: Request):
 
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+
+
+
+
+"""
+    -----------------------------------------------
+    구성원 API 
+"""
+
+@router.post("/api/user/all")
+async def user_all(request: Request):
+    """
+    구성원 추가/수정/조회/삭제를 순차적으로 수행하는 API 엔드포인트
+    """
+    try:
+        body = await request.json()
+        instance = body.get("instance")
+        server = body.get("server")
+
+        # 1. 사용자 추가
+        create_response = await process_create_user(request.app.state.global_page, instance, server, request.app.state)
+        if create_response.get("status") != "success":
+            return {"status": "error", "message": "사용자 추가 실패", "details": create_response}
+
+        # 2. 사용자 수정
+        modify_response = await process_modify_user(request.app.state.global_page, instance, server, request.app.state)
+        if modify_response.get("status") != "success":
+            return {"status": "error", "message": "사용자 수정 실패", "details": modify_response}
+
+        # 3. 사용자 조회
+        retrieve_response = await process_retreive_user(request.app.state.global_page, instance, server, request.app.state)
+        if retrieve_response.get("status") != "success":
+            return {"status": "error", "message": "사용자 조회 실패", "details": retrieve_response}
+
+        # 4. 사용자 삭제
+        delete_response = await process_delete_user(request.app.state.global_page, instance, server, request.app.state)
+        if delete_response.get("status") != "success":
+            return {"status": "error", "message": "사용자 삭제 실패", "details": delete_response}
+
+        # 모든 작업 성공 시 응답
+        return {
+            "status": "success",
+            "message": "모든 작업이 성공적으로 완료되었습니다.",
+            "details": {
+                "create": create_response,
+                "modify": modify_response,
+                "retrieve": retrieve_response,
+                "delete": delete_response,
+            },
+        }
+
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
 
 @router.post("/api/user/create")
 async def create_user(request: Request):
@@ -134,6 +197,12 @@ async def delete_user(request: Request):
         return {"status": "error", "message": str(e)}
     
     
+    
+    
+"""
+    -----------------------------------------------
+    조직 API 
+"""
 @router.post("/api/orgunits/create")
 async def create_orgunit(request: Request):
     """
